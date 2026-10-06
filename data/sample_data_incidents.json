@@ -1,0 +1,86 @@
+[
+  {
+    "incident_id": "INC-20261006-0001",
+    "vin": "5YJ3E1EA7KF317000",
+    "timestamp": "2026-10-06T09:14:02Z",
+    "status": "TRIAGED",
+    "raw_signal": {
+      "speed": 142,
+      "prev_speed": 38,
+      "rpm": 6100,
+      "battery_voltage": 11.2,
+      "dtc_codes": ["P0128", "P0A80", "U0100"],
+      "gps": {"lat": 37.7749, "lon": -122.4194},
+      "failed_auth_attempts": 1,
+      "ota_source": "tesla-ota-prod.aws.com"
+    },
+    "triggered_rule": "SPEED_DELTA_EXCEEDED",
+    "severity": "High",
+    "likely_cause": "Possible CAN bus injection",
+    "explanation": "Vehicle speed jumped from 38 to 142 mph in a single telemetry reading alongside 3 simultaneous DTC codes, one of which (U0100) indicates lost communication with the ECM. This pattern is consistent with a spoofed CAN message rather than a real driving event.",
+    "recommended_action": "Flag VIN for remote diagnostic lockout and dispatch a field inspection before next drive cycle."
+  },
+  {
+    "incident_id": "INC-20261006-0002",
+    "vin": "WBA3A5C50FD123789",
+    "timestamp": "2026-10-06T09:21:47Z",
+    "status": "TRIAGED",
+    "raw_signal": {
+      "speed": 61,
+      "prev_speed": 58,
+      "rpm": 2100,
+      "battery_voltage": 12.6,
+      "dtc_codes": [],
+      "gps": {"lat": 50.1109, "lon": 8.6821},
+      "failed_auth_attempts": 6,
+      "ota_source": "bmw-ota-prod.aws.com"
+    },
+    "triggered_rule": "FAILED_AUTH_THRESHOLD",
+    "severity": "Critical",
+    "likely_cause": "Unauthorized ECU access attempt",
+    "explanation": "6 failed authentication attempts were recorded against the vehicle's telematics unit within one polling interval while the car was in normal operation. No corresponding DTCs or driver-initiated action explains this pattern.",
+    "recommended_action": "Immediately notify the SOC on-call engineer and temporarily revoke remote-access credentials for this VIN pending investigation."
+  },
+  {
+    "incident_id": "INC-20261006-0003",
+    "vin": "KNDJT2A24J7654321",
+    "timestamp": "2026-10-06T09:33:10Z",
+    "status": "TRIAGED",
+    "raw_signal": {
+      "speed": 45,
+      "prev_speed": 44,
+      "rpm": 1800,
+      "battery_voltage": 12.4,
+      "dtc_codes": [],
+      "gps": {"lat": 19.0760, "lon": 72.8777},
+      "failed_auth_attempts": 0,
+      "ota_source": "unknown-update-mirror.net"
+    },
+    "triggered_rule": "UNTRUSTED_OTA_SOURCE",
+    "severity": "Critical",
+    "likely_cause": "Malicious or spoofed OTA update source",
+    "explanation": "An over-the-air update was accepted from a source not present in the vehicle's trusted OTA allowlist. This could indicate a man-in-the-middle update injection or a misconfigured update channel.",
+    "recommended_action": "Block the OTA install immediately, quarantine the downloaded package, and audit the vehicle's trusted-source configuration."
+  },
+  {
+    "incident_id": "INC-20261006-0004",
+    "vin": "1FADP3F20EL123456",
+    "timestamp": "2026-10-06T09:40:55Z",
+    "status": "TRIAGED",
+    "raw_signal": {
+      "speed": 22,
+      "prev_speed": 24,
+      "rpm": 950,
+      "battery_voltage": 9.1,
+      "dtc_codes": ["P0562"],
+      "gps": {"lat": 40.7128, "lon": -74.0060},
+      "failed_auth_attempts": 0,
+      "ota_source": "ford-ota-prod.aws.com"
+    },
+    "triggered_rule": "DTC_THRESHOLD",
+    "severity": "Low",
+    "likely_cause": "Likely sensor/battery fault, not a security event",
+    "explanation": "A single low-voltage DTC (P0562) was raised with no corresponding speed anomaly, authentication failures, or untrusted network activity. This pattern is typical of a weak or aging 12V battery rather than an attack.",
+    "recommended_action": "Route to standard maintenance queue; no security escalation needed."
+  }
+]

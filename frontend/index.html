@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DriveGuard AI — SOC Dashboard</title>
+<style>
+  :root {
+    --bg: #0b1220; --card: #141c2f; --text: #e8ecf5; --muted: #8b95ab;
+    --critical: #e5484d; --high: #f5a524; --medium: #f6e05e; --low: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { padding: 20px 28px; border-bottom: 1px solid #1f2a44; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { margin: 0; font-size: 20px; }
+  header .status { color: var(--muted); font-size: 13px; }
+  #config { padding: 12px 28px; background: #0f1627; display: flex; gap: 8px; align-items: center; }
+  #config input { flex: 1; background: #1a2338; border: 1px solid #2a3654; color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 13px; }
+  #config button { background: #3b82f6; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  main { padding: 20px 28px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border-radius: 10px; padding: 16px; border-left: 4px solid var(--low); }
+  .card.Critical { border-left-color: var(--critical); }
+  .card.High { border-left-color: var(--high); }
+  .card.Medium { border-left-color: var(--medium); }
+  .card.Low { border-left-color: var(--low); }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+  .badge.Critical { background: var(--critical); color: white; }
+  .badge.High { background: var(--high); color: #241a00; }
+  .badge.Medium { background: var(--medium); color: #241a00; }
+  .badge.Low { background: var(--low); color: white; }
+  .card h3 { margin: 10px 0 4px; font-size: 15px; }
+  .card p { margin: 6px 0; font-size: 13px; color: #c7cede; line-height: 1.4; }
+  .card .action { margin-top: 10px; padding-top: 10px; border-top: 1px solid #1f2a44; font-size: 13px; }
+  .card .meta { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .empty { color: var(--muted); padding: 40px; text-align: center; grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🚗 DriveGuard AI — SOC Dashboard</h1>
+    <span class="status" id="status">Connecting…</span>
+  </header>
+  <div id="config">
+    <input id="apiUrl" placeholder="Paste your API Gateway /incidents URL here, e.g. https://xxxx.execute-api.us-east-1.amazonaws.com/prod/incidents" />
+    <button onclick="saveUrl()">Connect</button>
+  </div>
+  <main id="feed">
+    <div class="empty">Paste your API URL above to connect.</div>
+  </main>
+
+<script>
+let apiUrl = "";
+
+function saveUrl() {
+  apiUrl = document.getElementById('apiUrl').value.trim();
+  if (apiUrl) { refresh(); }
+}
+
+async function refresh() {
+  if (!apiUrl) return;
+  const statusEl = document.getElementById('status');
+  try {
+    const res = await fetch(apiUrl);
+    const items = await res.json();
+    statusEl.textContent = `Live — ${items.length} incident(s) — updated ${new Date().toLocaleTimeString()}`;
+    render(items);
+  } catch (e) {
+    statusEl.textContent = "Connection error — check the API URL and CORS settings";
+  }
+}
+
+function render(items) {
+  const feed = document.getElementById('feed');
+  if (!items.length) {
+    feed.innerHTML = '<div class="empty">All clear — no triaged incidents yet.</div>';
+    return;
+  }
+  feed.innerHTML = items.map(i => `
+    <div class="card ${i.severity || 'Low'}">
+      <span class="badge ${i.severity || 'Low'}">${i.severity || 'Low'}</span>
+      <h3>${i.vin} — ${i.likely_cause || 'Unclassified'}</h3>
+      <p>${i.explanation || ''}</p>
+      <div class="action"><strong>Recommended:</strong> ${i.recommended_action || '—'}</div>
+      <div class="meta">${i.incident_id} · ${i.timestamp}</div>
+    </div>
+  `).join('');
+}
+
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

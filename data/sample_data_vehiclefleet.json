@@ -1,0 +1,10 @@
+[
+  {"vin": "1FADP3F20EL123456", "make": "Ford", "model": "Fusion", "year": 2023, "region": "us-east-1", "trusted_ota_sources": ["ford-ota-prod.aws.com"]},
+  {"vin": "5YJ3E1EA7KF317000", "make": "Tesla", "model": "Model 3", "year": 2024, "region": "us-west-2", "trusted_ota_sources": ["tesla-ota-prod.aws.com"]},
+  {"vin": "WBA3A5C50FD123789", "make": "BMW", "model": "3 Series", "year": 2022, "region": "eu-central-1", "trusted_ota_sources": ["bmw-ota-prod.aws.com"]},
+  {"vin": "JTDKARFU5K3012345", "make": "Toyota", "model": "Corolla", "year": 2023, "region": "us-east-1", "trusted_ota_sources": ["toyota-ota-prod.aws.com"]},
+  {"vin": "1HGCV1F34LA045678", "make": "Honda", "model": "Accord", "year": 2024, "region": "us-east-1", "trusted_ota_sources": ["honda-ota-prod.aws.com"]},
+  {"vin": "KNDJT2A24J7654321", "make": "Kia", "model": "Soul", "year": 2021, "region": "ap-south-1", "trusted_ota_sources": ["kia-ota-prod.aws.com"]},
+  {"vin": "3VWFE21C04M098765", "make": "Volkswagen", "model": "Jetta", "year": 2023, "region": "eu-west-1", "trusted_ota_sources": ["vw-ota-prod.aws.com"]},
+  {"vin": "2T1BURHE0JC456789", "make": "Toyota", "model": "Corolla", "year": 2022, "region": "us-west-2", "trusted_ota_sources": ["toyota-ota-prod.aws.com"]}
+]
